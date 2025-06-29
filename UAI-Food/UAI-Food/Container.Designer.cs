@@ -48,28 +48,29 @@
             // menuToolStripMenuItem
             // 
             menuToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { generarPedidoToolStripMenuItem, verMisOrdenesToolStripMenuItem, logOutToolStripMenuItem });
+            menuToolStripMenuItem.Image = Resource.icono;
             menuToolStripMenuItem.Name = "menuToolStripMenuItem";
-            menuToolStripMenuItem.Size = new Size(50, 20);
+            menuToolStripMenuItem.Size = new Size(66, 20);
             menuToolStripMenuItem.Text = "Menu";
             // 
             // generarPedidoToolStripMenuItem
             // 
             generarPedidoToolStripMenuItem.Name = "generarPedidoToolStripMenuItem";
-            generarPedidoToolStripMenuItem.Size = new Size(159, 22);
+            generarPedidoToolStripMenuItem.Size = new Size(180, 22);
             generarPedidoToolStripMenuItem.Text = "Generar Pedido";
             generarPedidoToolStripMenuItem.Click += generarPedidoToolStripMenuItem_Click;
             // 
             // verMisOrdenesToolStripMenuItem
             // 
             verMisOrdenesToolStripMenuItem.Name = "verMisOrdenesToolStripMenuItem";
-            verMisOrdenesToolStripMenuItem.Size = new Size(159, 22);
+            verMisOrdenesToolStripMenuItem.Size = new Size(180, 22);
             verMisOrdenesToolStripMenuItem.Text = "Ver mis Ordenes";
             verMisOrdenesToolStripMenuItem.Click += verMisOrdenesToolStripMenuItem_Click;
             // 
             // logOutToolStripMenuItem
             // 
             logOutToolStripMenuItem.Name = "logOutToolStripMenuItem";
-            logOutToolStripMenuItem.Size = new Size(159, 22);
+            logOutToolStripMenuItem.Size = new Size(180, 22);
             logOutToolStripMenuItem.Text = "LogOut";
             logOutToolStripMenuItem.Click += logOutToolStripMenuItem_Click;
             // 

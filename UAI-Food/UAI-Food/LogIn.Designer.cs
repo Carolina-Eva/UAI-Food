@@ -82,9 +82,10 @@
             // 
             // pictureBox1
             // 
+            pictureBox1.BorderStyle = BorderStyle.FixedSingle;
             pictureBox1.Location = new Point(94, 110);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(241, 224);
+            pictureBox1.Size = new Size(255, 253);
             pictureBox1.TabIndex = 5;
             pictureBox1.TabStop = false;
             // 
