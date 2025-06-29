@@ -7,43 +7,54 @@ namespace DAL
     public class PedidoRepository
     {
         private readonly Acceso _acceso = new Acceso();
-        PedidoMapper pedidoMapper = new PedidoMapper();
+        private static readonly PedidoMapper pedidoMapper = new PedidoMapper();
 
         public async Task<int> GuardarPedidoAsync(Pedido pedido)
         {
             if (pedido == null)
-            {
                 return 0;
-            }
 
-            string sql = $"GUARDAR_PEDIDO";
+            string sql = "GUARDAR_PEDIDO";
+
             var parametros = new List<SqlParameter>
             {
-                _acceso.CreateParameter("@Usuario", pedido.Usuario),
-                _acceso.CreateParameter("@CostoTotal", pedido.CostoTotal),
-                _acceso.CreateParameter("@Combo", pedido.Combo),
-                _acceso.CreateParameter("@Fecha", pedido.Fecha)
+                _acceso.CreateParameter("@UsuarioId", pedido.Usuario.Id),
+                _acceso.CreateParameter("@ComboDescripcion", pedido.Combo.Descripcion),
+                _acceso.CreateParameter("@Agregados", string.Join(", ", pedido.Agregados)),
+                _acceso.CreateParameter("@Fecha", pedido.Fecha),
+                _acceso.CreateParameter("@CostoTotal", (float)pedido.CostoTotal)
             };
 
-            int result = await _acceso.ExecuteWriteAsync(sql, parametros);
+            int result =  await _acceso.ExecuteWriteAsync(sql, parametros);
             return result;
         }
 
+
         public async Task<List<Pedido>> ObtenerPedidosAsync()
         {
-            string sql = $"LISTAR_PEDIDOS";
-            var pedidos = new List<Pedido>();
-
-            var table = await _acceso.GetDataAsync(sql);
-
-            // Assuming there is a method to fetch "agregados" rows for each pedido
-            var agregadosTable = await _acceso.GetDataAsync("LISTAR_AGREGADOS");
-
             var list = new List<Pedido>();
+            string sql = $"LISTAR_PEDIDOS";
+            var table = await _acceso.GetDataAsync(sql);
 
             foreach (DataRow row in table.Rows)
             {
-                //list.Add(pedidoMapper.MapearPedido(row));
+                list.Add(PedidoMapper.MapearPedido(row));
+            }
+            return list;
+        }
+        public async Task<List<Pedido>> ObtenerPedidosPorUsuarioAsync(int Id)
+        {
+            var list = new List<Pedido>();
+            string sql = $"LISTAR_PEDIDOS_POR_USUARIO";
+            var parametros = new List<SqlParameter>
+            {
+                _acceso.CreateParameter("@UsuarioId", Id)
+            };
+            var table = await _acceso.GetDataAsync(sql, parametros);
+
+            foreach (DataRow row in table.Rows)
+            {
+                list.Add(PedidoMapper.MapearPedido(row));
             }
             return list;
         }

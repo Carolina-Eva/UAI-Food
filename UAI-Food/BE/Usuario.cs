@@ -4,11 +4,12 @@
     {
         public int Id { get; set; }
         public string Nombre { get; set; } = string.Empty;
+        public string? Password { get; set; } = string.Empty;
 
-        public Usuario(int Id, string Nombre)
+        public Usuario(int getId, string getNombre)
         {
-            Id = Id;
-            Nombre = Nombre;
+            Id = getId;
+            Nombre = getNombre;
         }
     }
 }

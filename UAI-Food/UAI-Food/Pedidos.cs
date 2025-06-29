@@ -1,21 +1,24 @@
 using BE;
 using BLL;
+using SERVICES;
 
 namespace UAI_Food
 {
-    public partial class Form1 : Form
+    public partial class Pedidos : Form
     {
         List<string> agregados = new List<string> {"Tomate", "Carne", "Queso", "Papa" };
         List<string> combos = new List<string> { "Seleccionar", "Combo Basico", "Combo Especial", "Combo Familiar" };
-        Usuario Usuario = new Usuario(1, "UsuarioMock");
-        Pedido? pedido;
-        List<Pedido> pedidos = new List<Pedido>();
+
+        BE.Pedido? pedido;
+        List<BE.Pedido> pedidos = new List<BE.Pedido>();
         private PedidoManager PedidoManager = new PedidoManager();
 
-        public Form1()
+        public Pedidos()
         {
             InitializeComponent();
             IniciarlizarProductos();
+            lblBienvenido.Text = string.Empty;
+            lblBienvenido.Text = "Bienvenido " + LogInService.GetInstance.User.Nombre;
         }
 
         private void IniciarlizarProductos()
@@ -32,8 +35,8 @@ namespace UAI_Food
             lvPedido.GridLines = true;
 
             lvPedido.Columns.Add("Combo", 150);
-            lvPedido.Columns.Add("Agregados", 250);
-            lvPedido.Columns.Add("Precio Total", 100);
+            lvPedido.Columns.Add("Agregados", 200);
+            lvPedido.Columns.Add("Subtotal", 100);
         }
 
         private void btnAgregar_Click(object sender, EventArgs e)
@@ -76,11 +79,11 @@ namespace UAI_Food
                     else if (agregado == "Queso") { combo = new Queso(combo); }
                     else if (agregado == "Tomate") { combo = new Tomate(combo);}
                 }
-                pedido = new Pedido();
+                pedido = new BE.Pedido();
 
                 pedido.Combo = combo;
                 pedido.CostoTotal = combo.Costo;
-                pedido.Usuario = Usuario;
+                pedido.Usuario = LogInService.GetInstance.User;
                 pedido.Fecha = DateTime.Now;
                 pedido.Agregados = clbAdicionales.CheckedItems.Cast<string>().ToList();
 
@@ -111,11 +114,11 @@ namespace UAI_Food
             clbAdicionales.DataSource = null;
             clbAdicionales.DataSource = agregados;
 
-
+            lblTotal.Text = "Total del Pedido: $0.00";
             lvPedido.Items.Clear();
         }
 
-        private void btnPedido_Click(object sender, EventArgs e)
+        private async void btnPedido_Click(object sender, EventArgs e)
         {
             if (pedidos.Count == 0)
             {
@@ -136,14 +139,26 @@ namespace UAI_Food
                 MessageBoxIcon.Question
             );
 
-            if (result == DialogResult.OK) {
-                MessageBox.Show("Pedido enviado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (result == DialogResult.OK) {               
                 try { 
-                    PedidoManager.CrearPedido(pedido);
+                    var pedidosGenerados = 0;
+                    foreach (var p in pedidos)
+                    {
+                        pedidosGenerados =  await PedidoManager.CrearPedido(p);
+                    }
+                   
                     pedidos.Clear();
-                    lvPedido.Items.Clear();
+                    lvPedido.Items.Clear(); 
+
+                    cbCombos.DataSource = null;
+                    cbCombos.DataSource = combos;
                     cbCombos.SelectedIndex = 0;
-                    clbAdicionales.ClearSelected();
+
+                    clbAdicionales.DataSource = null;
+                    clbAdicionales.DataSource = agregados;
+
+                    lblTotal.Text = "Total del Pedido: $0.00";
+                    MessageBox.Show("Pedido enviado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
