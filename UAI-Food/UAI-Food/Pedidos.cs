@@ -6,28 +6,40 @@ namespace UAI_Food
 {
     public partial class Pedidos : Form
     {
-        List<string> agregados = new List<string> {"Tomate", "Carne", "Queso", "Papa" };
-        List<string> combos = new List<string> { "Seleccionar", "Combo Basico", "Combo Especial", "Combo Familiar" };
+        List<Producto> agregados = new List<Producto>();
+        List<Producto> combos = new List<Producto>();
 
         BE.Pedido? pedido;
         List<BE.Pedido> pedidos = new List<BE.Pedido>();
         private PedidoManager PedidoManager = new PedidoManager();
+        private ProductoManager ProductoManager = new ProductoManager();
 
         public Pedidos()
         {
             InitializeComponent();
-            IniciarlizarProductos();
             lblBienvenido.Text = string.Empty;
             lblBienvenido.Text = "Bienvenido " + LogInService.GetInstance.User.Nombre;
+            this.Load += Pedidos_Load;
         }
 
-        private void IniciarlizarProductos()
+        private async void Pedidos_Load(object sender, EventArgs e)
         {
+            await IniciarlizarProductos();  
+        }
+
+
+        private async Task IniciarlizarProductos()
+        {
+            agregados = await ProductoManager.ObtenerAgregados();
+            combos = await ProductoManager.ObtenerCombos();
+
             cbCombos.DataSource = null;
             cbCombos.DataSource = combos;
+            cbCombos.DisplayMember = "Nombre";
 
             clbAdicionales.DataSource = null;
             clbAdicionales.DataSource = agregados;
+            clbAdicionales.DisplayMember = "Nombre";
 
             lvPedido.Items.Clear();
             lvPedido.View = View.Details;
@@ -77,7 +89,7 @@ namespace UAI_Food
                     if (agregado == "Papa") { combo = new Papa(combo); }
                     else if (agregado == "Carne") { combo = new Carne(combo); }
                     else if (agregado == "Queso") { combo = new Queso(combo); }
-                    else if (agregado == "Tomate") { combo = new Tomate(combo);}
+                    else if (agregado == "Tomate") { combo = new Tomate(combo); }
                 }
                 pedido = new BE.Pedido();
 
@@ -139,16 +151,18 @@ namespace UAI_Food
                 MessageBoxIcon.Question
             );
 
-            if (result == DialogResult.OK) {               
-                try { 
+            if (result == DialogResult.OK)
+            {
+                try
+                {
                     var pedidosGenerados = 0;
                     foreach (var p in pedidos)
                     {
-                        pedidosGenerados =  await PedidoManager.CrearPedido(p);
+                        pedidosGenerados = await PedidoManager.CrearPedido(p);
                     }
-                   
+
                     pedidos.Clear();
-                    lvPedido.Items.Clear(); 
+                    lvPedido.Items.Clear();
 
                     cbCombos.DataSource = null;
                     cbCombos.DataSource = combos;
@@ -171,5 +185,7 @@ namespace UAI_Food
                 MessageBox.Show("Pedido no enviado.", "Cancelado", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
+
+
     }
 }

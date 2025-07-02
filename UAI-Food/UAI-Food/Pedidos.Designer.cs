@@ -128,7 +128,7 @@
             lblTotal.AutoSize = true;
             lblTotal.Location = new Point(301, 98);
             lblTotal.Name = "lblTotal";
-            lblTotal.Size = new Size(124, 15);
+            lblTotal.Size = new Size(125, 15);
             lblTotal.TabIndex = 9;
             lblTotal.Text = "Total del Pedido: $0.00";
             // 
@@ -140,7 +140,7 @@
             lblBienvenido.Size = new Size(0, 15);
             lblBienvenido.TabIndex = 10;
             // 
-            // Pedido
+            // Pedidos
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -156,8 +156,9 @@
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(cbCombos);
-            Name = "Pedido";
+            Name = "Pedidos";
             Text = "Form1";
+            Load += Pedidos_Load;
             ResumeLayout(false);
             PerformLayout();
         }

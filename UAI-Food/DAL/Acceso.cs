@@ -9,7 +9,7 @@ namespace DAL
 
         public Acceso()
         {
-            _connectionString = "Data Source=DESKTOP-CLR13LB\\SQLEXPRESS; Initial Catalog=UAI-Food; Integrated Security=SSPI; TrustServerCertificate=True;";
+            _connectionString = @"Data Source=PF4Y3HJD\SQLEXPRESS; Initial Catalog=UAI-Food; Integrated Security=SSPI; TrustServerCertificate=True;";
         }
 
         private async Task<SqlConnection> CreateConnectionAsync()
