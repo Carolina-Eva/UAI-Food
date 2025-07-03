@@ -19,8 +19,7 @@ namespace DAL
             var parametros = new List<SqlParameter>
             {
                 _acceso.CreateParameter("@UsuarioId", pedido.Usuario.Id),
-                _acceso.CreateParameter("@ComboDescripcion", pedido.Combo.Descripcion),
-                _acceso.CreateParameter("@Agregados", string.Join(", ", pedido.Agregados)),
+                _acceso.CreateParameter("@ComboDescripcion", pedido.ComboDescription),
                 _acceso.CreateParameter("@Fecha", pedido.Fecha),
                 _acceso.CreateParameter("@CostoTotal", (float)pedido.CostoTotal)
             };

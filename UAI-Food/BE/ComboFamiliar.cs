@@ -1,8 +1,6 @@
 ﻿namespace BE
 {
-    public class ComboFamiliar : Combo
+    public class ComboFamiliar : ProductoBase
     {
-        public override double Costo => 10;
-        public override string Descripcion => "Combo Familiar";
     }
 }

@@ -6,8 +6,8 @@ namespace UAI_Food
 {
     public partial class Pedidos : Form
     {
-        List<Producto> agregados = new List<Producto>();
-        List<Producto> combos = new List<Producto>();
+        List<ProductoBase> agregados = new List<ProductoBase>();
+        List<ProductoBase> combos = new List<ProductoBase>();
 
         BE.Pedido? pedido;
         List<BE.Pedido> pedidos = new List<BE.Pedido>();
@@ -24,7 +24,7 @@ namespace UAI_Food
 
         private async void Pedidos_Load(object sender, EventArgs e)
         {
-            await IniciarlizarProductos();  
+            await IniciarlizarProductos();
         }
 
 
@@ -42,6 +42,7 @@ namespace UAI_Food
             clbAdicionales.DisplayMember = "Nombre";
 
             lvPedido.Items.Clear();
+            lvPedido.Columns.Clear();
             lvPedido.View = View.Details;
             lvPedido.FullRowSelect = true;
             lvPedido.GridLines = true;
@@ -53,22 +54,10 @@ namespace UAI_Food
 
         private void btnAgregar_Click(object sender, EventArgs e)
         {
-            if (cbCombos.SelectedItem != null && cbCombos.SelectedItem.ToString() != "Seleccionar")
+            if (cbCombos.SelectedItem is ProductoBase comboSeleccionado)
             {
-                Combo combo = null;
-
-                if (cbCombos.SelectedItem.ToString() == "Combo Basico")
-                {
-                    combo = new ComboBasico();
-                }
-                else if (cbCombos.SelectedItem.ToString() == "Combo Especial")
-                {
-                    combo = new ComboEspecial();
-                }
-                else if (cbCombos.SelectedItem.ToString() == "Combo Familiar")
-                {
-                    combo = new ComboFamiliar();
-                }
+                // Crear una instancia nueva del combo según su tipo real
+                ProductoBase combo = CrearInstanciaCombo(comboSeleccionado);
 
                 if (combo != null)
                 {
@@ -80,54 +69,90 @@ namespace UAI_Food
                 MessageBox.Show("Por favor, seleccione un combo antes de agregar.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-        private void GenerarPedido(Combo combo)
+
+        private ProductoBase CrearInstanciaCombo(ProductoBase baseCombo)
         {
-            if (clbAdicionales.CheckedItems.Count > 0)
+            switch (baseCombo.Nombre.ToLower())
             {
-                foreach (string agregado in clbAdicionales.CheckedItems)
+                case "combo basico":
+                    return new ComboBasico { Nombre = baseCombo.Nombre, Precio = baseCombo.Precio };
+                case "combo especial":
+                    return new ComboEspecial { Nombre = baseCombo.Nombre, Precio = baseCombo.Precio };
+                case "combo familiar":
+                    return new ComboFamiliar { Nombre = baseCombo.Nombre, Precio = baseCombo.Precio };
+                default:
+                    return null;
+            }
+        }
+
+        private void GenerarPedido(ProductoBase combo)
+        {
+            foreach (var item in clbAdicionales.CheckedItems)
+            {
+                if (item is ProductoBase agregado)
                 {
-                    if (agregado == "Papa") { combo = new Papa(combo); }
-                    else if (agregado == "Carne") { combo = new Carne(combo); }
-                    else if (agregado == "Queso") { combo = new Queso(combo); }
-                    else if (agregado == "Tomate") { combo = new Tomate(combo); }
+                    switch (agregado.Nombre.ToUpper())
+                    {
+                        case "PAPA":
+                            combo = new Papa(combo, agregado.Nombre, agregado.Precio);
+                            break;
+                        case "CARNE":
+                            combo = new Carne(combo, agregado.Nombre, agregado.Precio);
+                            break;
+                        case "QUESO":
+                            combo = new Queso(combo, agregado.Nombre, agregado.Precio);
+                            break;
+                        case "TOMATE":
+                            combo = new Tomate(combo, agregado.Nombre, agregado.Precio);
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                pedido = new BE.Pedido();
-
-                pedido.Combo = combo;
-                pedido.CostoTotal = combo.Costo;
-                pedido.Usuario = LogInService.GetInstance.User;
-                pedido.Fecha = DateTime.Now;
-                pedido.Agregados = clbAdicionales.CheckedItems.Cast<string>().ToList();
-
-                pedidos.Add(pedido);
-                double totalPedido = pedidos.Sum(p => p.CostoTotal);
-                lblTotal.Text = $"Total del Pedido: {totalPedido:C2}";
             }
-            else
+
+            var pedidoNuevo = new Pedido
             {
-                pedido.Combo = null;
-            }
+                ComboDescription = combo.Nombre,
+                CostoTotal = combo.Precio,
+                Usuario = LogInService.GetInstance.User,
+                Fecha = DateTime.Now
+            };
+
+            pedidos.Add(pedidoNuevo);
+
+            double totalPedido = pedidos.Sum(p => p.CostoTotal);
+            lblTotal.Text = $"Total del Pedido: {totalPedido:C2}";
+
             mostrarComboEnLista(combo);
         }
-        private void mostrarComboEnLista(Combo combo)
+
+
+        private void mostrarComboEnLista(ProductoBase combo)
         {
-            ListViewItem item = new ListViewItem(combo.Descripcion);
-            string agregadosSeleccionados = string.Join(", ", clbAdicionales.CheckedItems.Cast<string>());
+            ListViewItem item = new ListViewItem(combo.Nombre);
+            string agregadosSeleccionados = string.Join(", ",
+                                                             clbAdicionales.CheckedItems
+                                                                 .OfType<ProductoBase>()
+                                                                 .Select(a => a.Nombre));
             item.SubItems.Add(agregadosSeleccionados);
-            item.SubItems.Add(combo.Costo.ToString("C2"));
+            item.SubItems.Add(combo.Precio.ToString("C2"));
             lvPedido.Items.Add(item);
         }
         private void btnCancelar_Click(object sender, EventArgs e)
         {
             cbCombos.DataSource = null;
             cbCombos.DataSource = combos;
+            cbCombos.DisplayMember = "Nombre";
             cbCombos.SelectedIndex = 0;
 
             clbAdicionales.DataSource = null;
             clbAdicionales.DataSource = agregados;
+            clbAdicionales.DisplayMember = "Nombre";
 
             lblTotal.Text = "Total del Pedido: $0.00";
             lvPedido.Items.Clear();
+            pedidos.Clear();
         }
 
         private async void btnPedido_Click(object sender, EventArgs e)
@@ -138,7 +163,7 @@ namespace UAI_Food
                 return;
             }
 
-            if (pedido == null)
+            if (pedidos == null)
             {
                 MessageBox.Show("El pedido actual es nulo. Por favor, cree un pedido antes de enviarlo.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -167,9 +192,11 @@ namespace UAI_Food
                     cbCombos.DataSource = null;
                     cbCombos.DataSource = combos;
                     cbCombos.SelectedIndex = 0;
+                    cbCombos.DisplayMember = "Nombre";
 
                     clbAdicionales.DataSource = null;
                     clbAdicionales.DataSource = agregados;
+                    clbAdicionales.DisplayMember = "Nombre";
 
                     lblTotal.Text = "Total del Pedido: $0.00";
                     MessageBox.Show("Pedido enviado correctamente.", "Éxito", MessageBoxButtons.OK, MessageBoxIcon.Information);

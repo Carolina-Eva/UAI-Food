@@ -2,8 +2,18 @@
 {
     public class Queso : AgregadoDecorator
     {
-        public Queso(Combo comida) : base(comida) { }
-        public override double Costo => _combo.Costo + 2.5;
-        public override string Descripcion => string.Format($"{_combo.Descripcion}, Queso");
+        private readonly string _nombreAgregado;
+        private readonly double _precioAgregado;
+
+        public Queso(ProductoBase combo, string nombreAgregado, double precioAgregado)
+            : base(combo)
+        {
+            _nombreAgregado = nombreAgregado;
+            _precioAgregado = precioAgregado;
+            esAgregado = true;
+        }
+        public override double Precio => _combo.Precio + _precioAgregado;
+        public override string Nombre => $"{_combo.Nombre}, {_nombreAgregado}";
+        public override bool esAgregado { get; set; }
     }
 }

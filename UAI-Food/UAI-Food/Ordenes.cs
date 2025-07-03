@@ -28,8 +28,7 @@ namespace UAI_Food
                 {
                     Id = p.Id,
                     Usuario = p.Usuario.Nombre,
-                    Combo = p.Combo.Descripcion,
-                    Agregados = string.Join(", ", p.Agregados),
+                    Combo = p.ComboDescription,
                     Fecha = p.Fecha,
                     CostoTotal = p.CostoTotal
                 }).ToList();

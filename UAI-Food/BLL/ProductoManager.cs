@@ -1,4 +1,5 @@
-﻿using DAL;
+﻿using BE;
+using DAL;
 
 namespace BLL
 {
@@ -6,17 +7,17 @@ namespace BLL
         
     {
         private readonly ProductoRepository _productoRepository = new ProductoRepository();
-        public async Task<List<BE.Producto>> ObtenerProductosAsync()
+        public async Task<List<ProductoBase>> ObtenerProductosAsync()
         {
             return await _productoRepository.ObtenerProductos();
         }
 
-        public async Task<List<BE.Producto>> ObtenerAgregados()
+        public async Task<List<ProductoBase>> ObtenerAgregados()
         {
             return await _productoRepository.ObtenerAgregados();
         }
 
-        public async Task<List<BE.Producto>> ObtenerCombos()
+        public async Task<List<ProductoBase>> ObtenerCombos()
         {
             return await _productoRepository.ObtenerCombos();
         }

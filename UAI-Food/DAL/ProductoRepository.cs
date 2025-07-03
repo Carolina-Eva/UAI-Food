@@ -6,9 +6,9 @@ namespace DAL
     public class ProductoRepository
     {
         private readonly Acceso _acceso = new Acceso();
-        public async Task<List<Producto>> ObtenerProductos()
+        public async Task<List<ProductoBase>> ObtenerProductos()
         {
-            var list = new List<Producto>();
+            var list = new List<ProductoBase>();
             string sql = $"GET_ALL_PRODUCTOS";
             var table = await _acceso.GetDataAsync(sql);
 
@@ -19,9 +19,9 @@ namespace DAL
             return list;
         }
 
-        public async Task<List<Producto>> ObtenerCombos()
+        public async Task<List<ProductoBase>> ObtenerCombos()
         {
-            var list = new List<Producto>();
+            var list = new List<ProductoBase>();
             string sql = $"GET_COMBOS";
             var table = await _acceso.GetDataAsync(sql);
 
@@ -32,9 +32,9 @@ namespace DAL
             return list;
         }
 
-        public async Task<List<Producto>> ObtenerAgregados()
+        public async Task<List<ProductoBase>> ObtenerAgregados()
         {
-            var list = new List<Producto>();
+            var list = new List<ProductoBase>();
             string sql = $"GET_AGREGADOS";
             var table = await _acceso.GetDataAsync(sql);
 

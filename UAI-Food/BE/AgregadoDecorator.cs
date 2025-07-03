@@ -1,12 +1,18 @@
-﻿namespace BE
+﻿using BE;
+
+public abstract class AgregadoDecorator : ProductoBase
 {
-    public abstract class AgregadoDecorator : Combo
+    protected ProductoBase _combo;
+    protected double PrecioAgregado { get; set; }
+    protected string NombreAgregado { get; set; } = string.Empty;
+
+    public ProductoBase ComboDecorator => _combo;
+
+    protected AgregadoDecorator(ProductoBase combo)
     {
-        protected Combo _combo;
-        public Combo ComboBase => _combo;
-        public AgregadoDecorator(Combo combo)
-        {
-            _combo = combo;
-        }
+        _combo = combo;
     }
+    public override abstract double Precio { get; }
+    public override abstract string Nombre { get; }
+    public override abstract bool esAgregado { get; set; }
 }

@@ -4,9 +4,9 @@
     using BE;
     internal class ProductoMapper
     {
-        public static Producto MapearProducto(DataRow row)
+        public static ProductoBase MapearProducto(DataRow row)
         {
-            return new Producto
+            return new ProductoDTO
             {
                 Id = Convert.ToInt32(row["ProductoId"]),
                 Nombre = row["Nombre"]?.ToString() ?? string.Empty,
