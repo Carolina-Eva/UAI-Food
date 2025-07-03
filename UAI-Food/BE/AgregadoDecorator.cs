@@ -3,8 +3,6 @@
 public abstract class AgregadoDecorator : ProductoBase
 {
     protected ProductoBase _combo;
-    protected double PrecioAgregado { get; set; }
-    protected string NombreAgregado { get; set; } = string.Empty;
 
     public ProductoBase ComboDecorator => _combo;
 

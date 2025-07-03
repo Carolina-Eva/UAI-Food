@@ -1,6 +1,6 @@
 USE [UAI-Food]
 GO
-/****** Object:  Table [dbo].[Pedido]    Script Date: 7/2/2025 4:58:08 PM ******/
+/****** Object:  Table [dbo].[Pedido]    Script Date: 2/7/2025 23:06:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -9,7 +9,6 @@ CREATE TABLE [dbo].[Pedido](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[UsuarioId] [int] NOT NULL,
 	[ComboDescripcion] [nvarchar](255) NOT NULL,
-	[Agregados] [nvarchar](500) NULL,
 	[Fecha] [datetime] NOT NULL,
 	[CostoTotal] [int] NOT NULL,
 PRIMARY KEY CLUSTERED 
@@ -18,7 +17,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Productos]    Script Date: 7/2/2025 4:58:08 PM ******/
+/****** Object:  Table [dbo].[Productos]    Script Date: 2/7/2025 23:06:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -34,22 +33,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[ProductosPedido]    Script Date: 7/2/2025 4:58:08 PM ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[ProductosPedido](
-	[ProductoId] [int] NOT NULL,
-	[PedidoId] [int] NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[ProductoId] ASC,
-	[PedidoId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Usuario]    Script Date: 7/2/2025 4:58:08 PM ******/
+/****** Object:  Table [dbo].[Usuario]    Script Date: 2/7/2025 23:06:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -64,13 +48,19 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+SET IDENTITY_INSERT [dbo].[Pedido] ON 
+GO
+INSERT [dbo].[Pedido] ([Id], [UsuarioId], [ComboDescripcion], [Fecha], [CostoTotal]) VALUES (1, 1, N'Combo Basico, Papa, Carne', CAST(N'2025-07-02T22:58:44.213' AS DateTime), 286)
+GO
+SET IDENTITY_INSERT [dbo].[Pedido] OFF
+GO
 SET IDENTITY_INSERT [dbo].[Productos] ON 
 GO
 INSERT [dbo].[Productos] ([Id], [Nombre], [esAgregado], [Precio]) VALUES (1, N'Combo Basico', 0, 200)
 GO
 INSERT [dbo].[Productos] ([Id], [Nombre], [esAgregado], [Precio]) VALUES (2, N'Combo Especial', 0, 300)
 GO
-INSERT [dbo].[Productos] ([Id], [Nombre], [esAgregado], [Precio]) VALUES (3, N'ComboFamiliar', 0, 400)
+INSERT [dbo].[Productos] ([Id], [Nombre], [esAgregado], [Precio]) VALUES (3, N'Combo Familiar', 0, 400)
 GO
 INSERT [dbo].[Productos] ([Id], [Nombre], [esAgregado], [Precio]) VALUES (4, N'Papa', 1, 50)
 GO
@@ -84,20 +74,21 @@ SET IDENTITY_INSERT [dbo].[Productos] OFF
 GO
 SET IDENTITY_INSERT [dbo].[Usuario] ON 
 GO
-INSERT [dbo].[Usuario] ([Id], [Descripcion], [Password]) VALUES (1, N'test', N'test')
+INSERT [dbo].[Usuario] ([Id], [Descripcion], [Password]) VALUES (1, N'UsuarioMock', N'123')
+GO
+INSERT [dbo].[Usuario] ([Id], [Descripcion], [Password]) VALUES (2, N'UsuarioMock2', N'234')
+GO
+INSERT [dbo].[Usuario] ([Id], [Descripcion], [Password]) VALUES (1002, N'test', N'test')
 GO
 SET IDENTITY_INSERT [dbo].[Usuario] OFF
 GO
 ALTER TABLE [dbo].[Pedido]  WITH CHECK ADD FOREIGN KEY([UsuarioId])
 REFERENCES [dbo].[Usuario] ([Id])
 GO
-ALTER TABLE [dbo].[ProductosPedido]  WITH CHECK ADD FOREIGN KEY([PedidoId])
-REFERENCES [dbo].[Pedido] ([Id])
+ALTER TABLE [dbo].[Pedido]  WITH CHECK ADD FOREIGN KEY([UsuarioId])
+REFERENCES [dbo].[Usuario] ([Id])
 GO
-ALTER TABLE [dbo].[ProductosPedido]  WITH CHECK ADD FOREIGN KEY([ProductoId])
-REFERENCES [dbo].[Productos] ([Id])
-GO
-/****** Object:  StoredProcedure [dbo].[GET_AGREGADOS]    Script Date: 7/2/2025 4:58:08 PM ******/
+/****** Object:  StoredProcedure [dbo].[GET_AGREGADOS]    Script Date: 2/7/2025 23:06:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -116,7 +107,7 @@ BEGIN
         p.esAgregado = 1;
 END;
 GO
-/****** Object:  StoredProcedure [dbo].[GET_ALL_PRODUCTOS]    Script Date: 7/2/2025 4:58:08 PM ******/
+/****** Object:  StoredProcedure [dbo].[GET_ALL_PRODUCTOS]    Script Date: 2/7/2025 23:06:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -133,7 +124,7 @@ BEGIN
         Productos as p
 END;
 GO
-/****** Object:  StoredProcedure [dbo].[GET_COMBOS]    Script Date: 7/2/2025 4:58:08 PM ******/
+/****** Object:  StoredProcedure [dbo].[GET_COMBOS]    Script Date: 2/7/2025 23:06:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -152,7 +143,7 @@ BEGIN
         p.esAgregado = 0;
 END;
 GO
-/****** Object:  StoredProcedure [dbo].[GET_USUARIO_ID]    Script Date: 7/2/2025 4:58:08 PM ******/
+/****** Object:  StoredProcedure [dbo].[GET_USUARIO_ID]    Script Date: 2/7/2025 23:06:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -165,7 +156,7 @@ AS
 	WHERE Usuario.Descripcion = @NombreUsuario;
 END
 GO
-/****** Object:  StoredProcedure [dbo].[GUARDAR_PEDIDO]    Script Date: 7/2/2025 4:58:08 PM ******/
+/****** Object:  StoredProcedure [dbo].[GUARDAR_PEDIDO]    Script Date: 2/7/2025 23:06:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -173,16 +164,15 @@ GO
 CREATE PROCEDURE [dbo].[GUARDAR_PEDIDO]
     @UsuarioId INT,
     @ComboDescripcion NVARCHAR(255),
-    @Agregados NVARCHAR(500),
     @Fecha DATETIME,
     @CostoTotal INT
 AS
 BEGIN
-    INSERT INTO Pedido (UsuarioId, ComboDescripcion, Agregados, Fecha, CostoTotal)
-    VALUES (@UsuarioId, @ComboDescripcion, @Agregados, @Fecha, @CostoTotal);
+    INSERT INTO Pedido (UsuarioId, ComboDescripcion, Fecha, CostoTotal)
+    VALUES (@UsuarioId, @ComboDescripcion, @Fecha, @CostoTotal);
 END;
 GO
-/****** Object:  StoredProcedure [dbo].[LISTAR_PEDIDOS]    Script Date: 7/2/2025 4:58:08 PM ******/
+/****** Object:  StoredProcedure [dbo].[LISTAR_PEDIDOS]    Script Date: 2/7/2025 23:06:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -203,7 +193,7 @@ BEGIN
     ORDER BY P.Fecha DESC;
 END;
 GO
-/****** Object:  StoredProcedure [dbo].[LISTAR_PEDIDOS_POR_USUARIO]    Script Date: 7/2/2025 4:58:08 PM ******/
+/****** Object:  StoredProcedure [dbo].[LISTAR_PEDIDOS_POR_USUARIO]    Script Date: 2/7/2025 23:06:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -217,7 +207,6 @@ BEGIN
         P.UsuarioId,
         U.Descripcion AS UsuarioDescripcion,
         P.ComboDescripcion,
-        P.Agregados,
         P.Fecha,
         P.CostoTotal
     FROM Pedido P
@@ -226,7 +215,7 @@ BEGIN
     ORDER BY P.Fecha DESC;
 END;
 GO
-/****** Object:  StoredProcedure [dbo].[VALIDAR_USUARIO]    Script Date: 7/2/2025 4:58:08 PM ******/
+/****** Object:  StoredProcedure [dbo].[VALIDAR_USUARIO]    Script Date: 2/7/2025 23:06:49 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
